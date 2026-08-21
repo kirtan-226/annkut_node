@@ -1,0 +1,16 @@
+node_modules/
+
+# Local configuration. .env.example is the committed template; .env holds real
+# credentials and must never be committed -- putting database credentials in
+# source control is exactly what this port moved away from.
+.env
+.env.*
+!.env.example
+
+# SAM build artefacts. samconfig.toml is excluded because --guided writes
+# account-specific values (subnet ids, security groups, secret ARNs) into it.
+.aws-sam/
+samconfig.toml
+
+*.log
+.DS_Store
