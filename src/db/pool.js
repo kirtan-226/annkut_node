@@ -1,8 +1,17 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const mysql = require('mysql2/promise');
 const config = require('../config/env');
 const { getCredentials } = require('./credentials');
+
+// RDS terminates TLS with a certificate chained to the Amazon RDS CA, which is
+// not in Node's default trust store. Bundled alongside the app so
+// rejectUnauthorized can stay true instead of skipping verification.
+const rdsCaBundle = fs.readFileSync(
+  path.join(__dirname, '..', '..', 'certs', 'rds-global-bundle.pem')
+);
 
 /**
  * Module-scope pool.
@@ -49,7 +58,7 @@ async function getPool() {
       decimalNumbers: false,
       dateStrings: true,
       timezone: 'Z',
-      ssl: config.db.ssl ? { rejectUnauthorized: true } : undefined,
+      ssl: config.db.ssl ? { ca: rdsCaBundle, rejectUnauthorized: true } : undefined,
     });
   })();
 
